@@ -317,4 +317,20 @@
       return true;
     }
   });
+
+  // Tự động chặn và chuyển hướng link trỏ tới studocu.com sang studocu.vn để không bị nhà mạng chặn
+  document.addEventListener('click', (e) => {
+    const anchor = e.target.closest('a');
+    if (!anchor || !anchor.href) return;
+    try {
+      const url = new URL(anchor.href);
+      if (url.hostname.includes('studocu.com')) {
+        url.hostname = 'www.studocu.vn';
+        if (url.pathname.startsWith('/en-us/')) {
+          url.pathname = url.pathname.replace(/^\/en-us\//, '/vn/');
+        }
+        anchor.href = url.toString();
+      }
+    } catch (_) {}
+  }, true);
 })();

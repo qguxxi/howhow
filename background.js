@@ -55,3 +55,32 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     return true;
   }
 });
+
+/**
+ * Tự động chuyển hướng từ studocu.com sang studocu.vn khi mạng VN chặn kết nối (ERR_CONNECTION_RESET)
+ */
+chrome.webNavigation.onErrorOccurred.addListener((details) => {
+  if (details.frameId !== 0 || !details.url) return;
+
+  const error = details.error || '';
+  const isNetworkBlock =
+    error.includes('CONNECTION_RESET') ||
+    error.includes('CONNECTION_REFUSED') ||
+    error.includes('CONNECTION_CLOSED') ||
+    error.includes('NAME_NOT_RESOLVED') ||
+    error.includes('TIMED_OUT');
+
+  if (isNetworkBlock && details.url.includes('studocu.com')) {
+    try {
+      const urlObj = new URL(details.url);
+      urlObj.hostname = 'www.studocu.vn';
+      if (urlObj.pathname.startsWith('/en-us/')) {
+        urlObj.pathname = urlObj.pathname.replace(/^\/en-us\//, '/vn/');
+      }
+      console.log(`[howhow] Phát hiện lỗi ${error} trên studocu.com. Đang chuyển hướng sang: ${urlObj.toString()}`);
+      chrome.tabs.update(details.tabId, { url: urlObj.toString() });
+    } catch (e) {
+      console.warn('Lỗi khi tự động chuyển hướng studocu.com sang studocu.vn:', e);
+    }
+  }
+});

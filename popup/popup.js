@@ -22,6 +22,7 @@ const I18N = {
     defaultSub: 'In tài liệu chất lượng cao',
     studocuDownloadSub: 'Tự động dàn trang in chất lượng cao',
     studocuUnlockTitle: 'Xem file & Xóa Watermark',
+    studocuWarning: '💡 Mẹo: Nếu gặp lỗi "ERR_CONNECTION_RESET", hãy bật WARP 1.1.1.1 hoặc dùng studocu.vn. Nhớ cuộn xuống để nạp hết trang trước khi in.',
     scribdDownloadSub: 'Tự động tải & unblur PDF',
     scribdUnlockTitle: 'Mở khóa & Xóa Banner',
     slideshareDownloadSub: 'Dàn trang in slide ngang A4',
@@ -48,6 +49,7 @@ const I18N = {
     defaultSub: 'High quality document print',
     studocuDownloadSub: 'Auto layout high-res print',
     studocuUnlockTitle: 'View file & Clear Watermark',
+    studocuWarning: '💡 Tip: If blocked with "ERR_CONNECTION_RESET", use 1.1.1.1 (WARP) or studocu.vn. Scroll down to load all pages before printing.',
     scribdDownloadSub: 'Auto unblur & download PDF',
     scribdUnlockTitle: 'Unlock & Remove Banners',
     slideshareDownloadSub: 'Landscape A4 slide layout',
@@ -181,15 +183,19 @@ function updateDynamicLabels() {
   if (currentPlatform === 'studocu') {
     if (txtDownloadSub) txtDownloadSub.textContent = t.studocuDownloadSub;
     if (txtUnlockDoc) txtUnlockDoc.textContent = t.studocuUnlockTitle;
+    if (txtWarningContent) txtWarningContent.textContent = t.studocuWarning || t.warningContent;
   } else if (currentPlatform === 'scribd') {
     if (txtDownloadSub) txtDownloadSub.textContent = t.scribdDownloadSub;
     if (txtUnlockDoc) txtUnlockDoc.textContent = t.scribdUnlockTitle;
+    if (txtWarningContent) txtWarningContent.textContent = t.warningContent;
   } else if (currentPlatform === 'slideshare') {
     if (txtDownloadSub) txtDownloadSub.textContent = t.slideshareDownloadSub;
     if (txtUnlockDoc) txtUnlockDoc.textContent = t.slideshareUnlockTitle;
+    if (txtWarningContent) txtWarningContent.textContent = t.warningContent;
   } else {
     if (txtDownloadSub) txtDownloadSub.textContent = t.defaultSub;
     if (txtUnlockDoc) txtUnlockDoc.textContent = t.unlockDoc;
+    if (txtWarningContent) txtWarningContent.textContent = t.warningContent;
   }
 }
 
