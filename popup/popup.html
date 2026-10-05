@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>howhow</title>
+  <!-- Google Fonts: Inter (Shadcn UI Standard) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <!-- Shadcn UI Popup Container -->
+  <div class="shadcn-popup-root">
+    
+    <!-- Shadcn Header -->
+    <header class="shadcn-header">
+      <div class="shadcn-brand">
+        <div class="shadcn-avatar">
+          <img src="../assets/logo.png" alt="Logo" class="shadcn-avatar-img">
+        </div>
+        <div class="shadcn-brand-info">
+          <span class="shadcn-brand-title">howhow</span>
+        </div>
+      </div>
+
+      <!-- Shadcn Select Dropdown -->
+      <div class="shadcn-select-wrapper">
+        <button id="langButton" class="shadcn-select-trigger" type="button" aria-haspopup="listbox" aria-expanded="false">
+          <!-- Globe icon -->
+          <svg class="shadcn-icon-sm text-muted-foreground" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="2" y1="12" x2="22" y2="12"></line>
+            <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+          </svg>
+          <span id="currentLangText">Tiếng Việt</span>
+          <!-- Chevron Down -->
+          <svg class="shadcn-icon-xs text-muted-foreground ml-1" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="6 9 12 15 18 9"></polyline>
+          </svg>
+        </button>
+
+        <!-- Dropdown Menu (Shadcn SelectContent) -->
+        <div id="langMenu" class="shadcn-select-content hidden" role="listbox">
+          <div class="shadcn-select-item active" data-lang="vi" role="option">
+            <span>Tiếng Việt</span>
+            <svg class="check-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+          </div>
+          <div class="shadcn-select-item" data-lang="en" role="option">
+            <span>English</span>
+            <svg class="check-icon hidden" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Body Layout -->
+    <main class="shadcn-main">
+      
+      <!-- 1. Primary Action (Shadcn Button variant="default") -->
+      <button id="btnDownloadPdf" class="shadcn-btn shadcn-btn-default shadcn-btn-lg" type="button">
+        <div class="btn-content-left">
+          <div class="btn-icon-box bg-primary-foreground/15 text-primary-foreground">
+            <!-- FileDown icon (Lucide) -->
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"></path>
+              <path d="M14 2v4a2 2 0 0 0 2 2h4"></path>
+              <path d="M12 18v-6"></path>
+              <path d="m9 15 3 3 3-3"></path>
+            </svg>
+          </div>
+          <div class="btn-text-stack">
+            <span id="txtDownloadPdf" class="btn-primary-title">Tải file PDF</span>
+            <span class="btn-primary-sub">In tài liệu chất lượng cao</span>
+          </div>
+        </div>
+        <div class="btn-content-right">
+          <!-- Chevron right icon -->
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="opacity-70">
+            <polyline points="9 18 15 12 9 6"></polyline>
+          </svg>
+        </div>
+      </button>
+
+      <!-- 2. Shadcn Alert Component (Warning Callout) -->
+      <div class="shadcn-alert" role="alert">
+        <!-- AlertTriangle icon (Lucide) -->
+        <svg class="shadcn-alert-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"></path>
+          <line x1="12" y1="9" x2="12" y2="13"></line>
+          <line x1="12" y1="17" x2="12.01" y2="17"></line>
+        </svg>
+        <div class="shadcn-alert-content">
+          <h5 id="txtWarningTitle" class="shadcn-alert-title">Lưu ý</h5>
+          <div id="txtWarningContent" class="shadcn-alert-description">
+            Để tải toàn bộ tài liệu, hãy cuộn xuống dưới cùng trang (Studocu, Scribd, SlideShare) để nạp đầy đủ các trang trước khi in.
+          </div>
+        </div>
+      </div>
+
+      <!-- 3. Unlock Document (Shadcn Button variant="outline") -->
+      <button id="btnUnlockDoc" class="shadcn-btn shadcn-btn-outline shadcn-btn-md" type="button">
+        <div class="btn-content-left">
+          <div class="btn-icon-box bg-blue-50 text-blue-600 border border-blue-100">
+            <!-- Eye/Unlock icon (Lucide) -->
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"></path>
+              <circle cx="12" cy="12" r="3"></circle>
+            </svg>
+          </div>
+          <div class="btn-text-stack">
+            <span id="txtUnlockDoc" class="btn-outline-title">Mở khóa tài liệu</span>
+          </div>
+        </div>
+        <div class="btn-content-right">
+          <!-- Arrow Right -->
+          <svg class="text-muted-foreground" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+            <polyline points="12 5 19 12 12 19"></polyline>
+          </svg>
+        </div>
+      </button>
+
+      <!-- 4. Footer Widget (Shadcn Card) -->
+      <div class="shadcn-card">
+        <div class="shadcn-card-header">
+          <div class="coffee-icon-box">
+            <!-- Coffee icon (Lucide) -->
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M17 8h1a4 4 0 1 1 0 8h-1"></path>
+              <path d="M3 8h14v9a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4Z"></path>
+              <line x1="6" y1="2" x2="6" y2="4"></line>
+              <line x1="10" y1="2" x2="10" y2="4"></line>
+              <line x1="14" y1="2" x2="14" y2="4"></line>
+            </svg>
+          </div>
+          <span id="txtCoffeeTitle" class="shadcn-card-title">Ủng hộ cốc cà phê</span>
+        </div>
+
+        <button id="btnScanQr" class="shadcn-btn shadcn-btn-secondary shadcn-btn-sm" type="button">
+          <span id="txtScanCode" class="scan-text">Quét mã</span>
+          <!-- QrCode icon (Lucide) -->
+          <svg class="text-amber-800" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect width="5" height="5" x="3" y="3" rx="1"></rect>
+            <rect width="5" height="5" x="16" y="3" rx="1"></rect>
+            <rect width="5" height="5" x="3" y="16" rx="1"></rect>
+            <path d="M21 16h-3a2 2 0 0 0-2 2v3"></path>
+            <path d="M21 21v.01"></path>
+            <path d="M12 7v3a2 2 0 0 1-2 2H7"></path>
+            <path d="M3 12h.01"></path>
+            <path d="M12 3h.01"></path>
+            <path d="M12 16v.01"></path>
+            <path d="M16 12h1"></path>
+            <path d="M21 12v.01"></path>
+            <path d="M12 21v-1"></path>
+          </svg>
+        </button>
+      </div>
+
+    </main>
+
+    <!-- Shadcn Sonner-style Toast Notification -->
+    <div id="toastNotification" class="shadcn-toast hidden" role="status">
+      <svg class="text-emerald-500" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+        <polyline points="22 4 12 14.01 9 11.01"></polyline>
+      </svg>
+      <span id="toastMessage">Thông báo</span>
+    </div>
+
+    <!-- Shadcn Dialog Component (Modal QR) -->
+    <div id="qrModal" class="shadcn-dialog-backdrop hidden">
+      <div class="shadcn-dialog-content">
+        <div class="shadcn-dialog-header">
+          <h2 id="txtModalTitle" class="shadcn-dialog-title">Ủng hộ cốc cà phê ☕</h2>
+          <button id="btnCloseModal" class="shadcn-dialog-close" type="button" aria-label="Close">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </button>
+        </div>
+
+        <div class="shadcn-dialog-body">
+          <div class="shadcn-qr-box">
+            <!-- High quality QR SVG -->
+            <svg class="qr-svg" viewBox="0 0 100 100" width="140" height="140">
+              <rect width="100" height="100" fill="#ffffff" rx="6"/>
+              <!-- Corner box 1 -->
+              <rect x="8" y="8" width="26" height="26" fill="#18181b" rx="4"/>
+              <rect x="13" y="13" width="16" height="16" fill="#ffffff" rx="2"/>
+              <rect x="17" y="17" width="8" height="8" fill="#18181b" rx="1"/>
+              
+              <!-- Corner box 2 -->
+              <rect x="66" y="8" width="26" height="26" fill="#18181b" rx="4"/>
+              <rect x="71" y="13" width="16" height="16" fill="#ffffff" rx="2"/>
+              <rect x="75" y="17" width="8" height="8" fill="#18181b" rx="1"/>
+              
+              <!-- Corner box 3 -->
+              <rect x="8" y="66" width="26" height="26" fill="#18181b" rx="4"/>
+              <rect x="13" y="71" width="16" height="16" fill="#ffffff" rx="2"/>
+              <rect x="17" y="75" width="8" height="8" fill="#18181b" rx="1"/>
+              
+              <!-- Matrix pattern -->
+              <rect x="42" y="10" width="6" height="6" fill="#18181b" rx="1"/>
+              <rect x="52" y="10" width="6" height="6" fill="#18181b" rx="1"/>
+              <rect x="42" y="22" width="6" height="6" fill="#18181b" rx="1"/>
+              <rect x="52" y="22" width="6" height="6" fill="#18181b" rx="1"/>
+              
+              <rect x="10" y="42" width="6" height="6" fill="#18181b" rx="1"/>
+              <rect x="22" y="42" width="6" height="6" fill="#18181b" rx="1"/>
+              <rect x="34" y="42" width="6" height="6" fill="#18181b" rx="1"/>
+              <rect x="46" y="42" width="6" height="6" fill="#18181b" rx="1"/>
+              <rect x="58" y="42" width="6" height="6" fill="#18181b" rx="1"/>
+              <rect x="70" y="42" width="6" height="6" fill="#18181b" rx="1"/>
+              <rect x="82" y="42" width="6" height="6" fill="#18181b" rx="1"/>
+              
+              <rect x="42" y="54" width="6" height="6" fill="#18181b" rx="1"/>
+              <rect x="54" y="54" width="6" height="6" fill="#18181b" rx="1"/>
+              <rect x="66" y="54" width="6" height="6" fill="#18181b" rx="1"/>
+              <rect x="78" y="54" width="6" height="6" fill="#18181b" rx="1"/>
+              
+              <rect x="42" y="66" width="6" height="6" fill="#18181b" rx="1"/>
+              <rect x="54" y="66" width="6" height="6" fill="#18181b" rx="1"/>
+              <rect x="72" y="66" width="6" height="6" fill="#18181b" rx="1"/>
+              <rect x="84" y="66" width="6" height="6" fill="#18181b" rx="1"/>
+              
+              <rect x="42" y="78" width="6" height="6" fill="#18181b" rx="1"/>
+              <rect x="60" y="78" width="6" height="6" fill="#18181b" rx="1"/>
+              <rect x="78" y="78" width="6" height="6" fill="#18181b" rx="1"/>
+            </svg>
+          </div>
+          <p id="txtModalMsg" class="shadcn-dialog-desc">
+            Quét mã để ủng hộ nhóm phát triển howhow. Cảm ơn bạn rất nhiều! ✨
+          </p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>

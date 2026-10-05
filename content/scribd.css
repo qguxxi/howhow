@@ -1,0 +1,56 @@
+/* howhow - Scribd Master Stylesheet: Unblur, Paywall Removal & Native Layout */
+
+/* 1. Unblur Text & Override Scribd's Shadow Blur & Transparent Text */
+.outer_page.blurred_page,
+.outer_page.blurred_page * {
+  -webkit-user-drag: auto !important;
+  user-select: text !important;
+  -webkit-user-select: text !important;
+}
+
+.outer_page.blurred_page .text_layer,
+.outer_page.blurred_page .text_layer *,
+.outer_page.blurred_page .text_layer [style],
+.outer_page .text_layer,
+.outer_page .text_layer *,
+.outer_page .text_layer [style],
+.text_layer [style*="color: transparent"],
+.text_layer [style*="text-shadow"] {
+  text-shadow: none !important;
+  color: #000 !important;
+  user-select: text !important;
+  -webkit-user-select: text !important;
+  opacity: 1 !important;
+}
+
+/* 2. Unblur Images */
+.outer_page.blurred_page .image_layer img,
+.outer_page .image_layer img,
+.image_layer img[style*="opacity: 0.04"],
+.image_layer img[style*="opacity: 0."] {
+  opacity: 1 !important;
+  filter: none !important;
+  -webkit-filter: none !important;
+  visibility: visible !important;
+}
+
+/* 3. Hide all Scribd Paywall, Promo & Ad Elements */
+._3jL30R,
+[style*="--promo-vertical-offset"],
+.between_page_portal_root,
+.between_page_ads,
+.promo_wrapper,
+.document_scroller [class*="promo"],
+[class*="paywall"],
+.ad_wrapper,
+.mobile_banner,
+.autogen_class_views_read2_content_blur {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+  height: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  overflow: hidden !important;
+}

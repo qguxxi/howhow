@@ -1,0 +1,190 @@
+/* howhow - Studocu Style: Unblur, Ads removal & Native Print Layout */
+
+/* ========== 1. GỠ MỜ VÀ WATERMARK / OVERLAY ========== */
+
+body .nofilter,
+.nofilter {
+  filter: none !important;
+  -webkit-filter: none !important;
+  opacity: 1 !important;
+}
+
+/* Các wrapper bị áp hiệu ứng blur của Studocu */
+.page-content[class*="blurred"],
+.page-content[class*="Blurred"],
+.pf[class*="blurred"],
+.pf[class*="Blurred"],
+.pf,
+.page-content,
+[class*="blurred-image-wrapper"],
+[class*="BlurredImage"],
+[class*="blurred-page"],
+[class*="BlurredPage"] {
+  filter: none !important;
+  -webkit-filter: none !important;
+  opacity: 1 !important;
+  user-select: auto !important;
+  -webkit-user-select: auto !important;
+  pointer-events: auto !important;
+  visibility: visible !important;
+  clip-path: none !important;
+  -webkit-clip-path: none !important;
+  mask-image: none !important;
+  -webkit-mask-image: none !important;
+}
+
+.pf img,
+.page-content img {
+  filter: none !important;
+  -webkit-filter: none !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  clip-path: none !important;
+}
+
+/* Gỡ backdrop filter và overlay phủ mờ trên tài liệu */
+[class*="Viewer_document"] [class*="overlay"],
+[class*="Viewer_document"] [class*="Overlay"],
+#viewer-wrapper [class*="overlay"],
+#viewer-wrapper [class*="Overlay"],
+.pf::before,
+.pf::after,
+.page-content::before,
+.page-content::after,
+[class*="blurred"]::before,
+[class*="blurred"]::after,
+[class*="Blurred"]::before,
+[class*="Blurred"]::after {
+  display: none !important;
+  content: none !important;
+  opacity: 0 !important;
+  visibility: hidden !important;
+}
+
+/* ========== 2. ẨN BANNER PREMIUM, MODAL MUA GÓI & BOT WALL ========== */
+
+[class*="PremiumBannerBlobWrapper"],
+[class*="PremiumBannerHeader"],
+[class*="PremiumBannerSubHeader"],
+[class*="PremiumBannerBenefitsList"],
+[class*="PremiumBannerButtons"],
+[class*="InlineBanner_inline-banner"],
+[class*="PremiumPageClarificationBanner"],
+[class*="premium-banner-wrapper"],
+[class*="PremiumBannerWrapper"],
+[class*="premiumBannerWrapper"],
+[class*="ViewerContainer_premium"],
+[data-test-selector*="preview-message"],
+[data-test-selector*="preview-banner"],
+.banner-wrapper,
+#modal-overlay,
+div:has(> dialog[open][class*="AuthWall"]:not([class*="hideable"])) {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  height: 0 !important;
+  width: 0 !important;
+  overflow: hidden !important;
+  pointer-events: none !important;
+}
+
+/* Khôi phục thanh cuộn nếu Studocu khóa cuộn trang (scroll-lock) */
+html:has(dialog[open][class*="AuthWall"]) {
+  overflow: visible !important;
+  padding-right: 0 !important;
+  height: auto !important;
+}
+html:has(dialog[open][class*="AuthWall"]) body {
+  position: static !important;
+  overflow: visible !important;
+}
+
+/* Ẩn huy hiệu Premium gây rối mắt */
+[class*="PremiumBadge"],
+[class*="premium-badge"],
+[class*="PremiumLabel"],
+[class*="PremiumTag"],
+[class*="PremiumIcon"] {
+  display: none !important;
+}
+
+/* Ẩn quảng cáo và AI toolbar */
+[class*="AdsContainer"],
+r89-standalone,
+[id^="r89-"],
+iframe[id^="google_ads_iframe"],
+[id^="div-gpt-ad"],
+[class*="AIToolbar"] {
+  display: none !important;
+}
+
+/* ========== 3. NATIVE PRINT LAYOUT (IN CHUẨN KHỔ) ========== */
+
+html:has(body.howhow-print) {
+  overflow: visible !important;
+  height: auto !important;
+}
+
+body.howhow-print {
+  margin: 0 !important;
+  padding: 0 !important;
+  background: #fff !important;
+  -webkit-print-color-adjust: exact !important;
+  print-color-adjust: exact !important;
+}
+
+/* Ẩn các phần tử ngoài rìa (sidebar, navbar, footer) */
+body.howhow-print .howhow-hide {
+  display: none !important;
+}
+
+/* Tổ tiên của trang: gỡ bỏ transform, float, giới hạn kích thước */
+body.howhow-print .howhow-anc {
+  display: block !important;
+  position: static !important;
+  float: none !important;
+  inset: auto !important;
+  width: auto !important;
+  min-width: 0 !important;
+  max-width: none !important;
+  height: auto !important;
+  min-height: 0 !important;
+  max-height: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+  overflow: visible !important;
+  transform: none !important;
+  zoom: 1 !important;
+  contain: none !important;
+  box-shadow: none !important;
+  background: none !important;
+}
+
+/* Định dạng từng trang in */
+body.howhow-print .page-content.howhow-page {
+  display: block !important;
+  visibility: visible !important;
+  content-visibility: visible !important;
+  position: relative !important;
+  inset: auto !important;
+  float: none !important;
+  box-sizing: border-box !important;
+  margin: 0 !important;
+  overflow: hidden !important;
+  box-shadow: none !important;
+  break-after: page !important;
+  page-break-after: always !important;
+  break-inside: avoid !important;
+}
+
+body.howhow-print .page-content.howhow-last {
+  break-after: auto !important;
+  page-break-after: auto !important;
+}
+
+@media print {
+  @page {
+    margin: 0;
+  }
+}

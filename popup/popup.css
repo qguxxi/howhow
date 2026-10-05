@@ -1,0 +1,563 @@
+/* howhow - Shadcn UI Styled Popup Stylesheet */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+:root {
+  /* Shadcn UI Design Tokens */
+  --background: #ffffff;
+  --foreground: #09090b;
+  --card: #ffffff;
+  --card-foreground: #09090b;
+  --popover: #ffffff;
+  --popover-foreground: #09090b;
+  --primary: #18181b;
+  --primary-foreground: #fafafa;
+  --secondary: #f4f4f5;
+  --secondary-foreground: #18181b;
+  --muted: #f4f4f5;
+  --muted-foreground: #71717a;
+  --accent: #f4f4f5;
+  --accent-foreground: #18181b;
+  --destructive: #ef4444;
+  --destructive-foreground: #fafafa;
+  --border: #e4e4e7;
+  --input: #e4e4e7;
+  --ring: #18181b;
+  
+  --radius-lg: 0.5rem;    /* 8px */
+  --radius-md: 0.375rem;  /* 6px */
+  --radius-sm: 0.25rem;   /* 4px */
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  color: var(--foreground);
+  background-color: var(--background);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Tab preview mode vs Extension popup mode */
+@media screen and (min-width: 480px) {
+  body {
+    min-height: 100vh;
+    background-color: #f4f4f5;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+  }
+  .shadcn-popup-root {
+    width: 400px;
+    background-color: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.08), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
+    overflow: hidden;
+    position: relative;
+  }
+}
+
+@media screen and (max-width: 479px) {
+  html, body {
+    width: 400px;
+    background-color: var(--background);
+    overflow-x: hidden;
+  }
+  .shadcn-popup-root {
+    width: 400px;
+    background-color: var(--card);
+    border: none;
+    border-radius: 0;
+    box-shadow: none;
+    overflow: hidden;
+    position: relative;
+  }
+}
+
+/* ================= 1. SHADCN HEADER ================= */
+
+.shadcn-header {
+  height: 56px;
+  border-bottom: 1px solid var(--border);
+  padding: 0 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: var(--card);
+}
+
+.shadcn-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.shadcn-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-md);
+  background-color: #fffbeb;
+  border: 1px solid #fde68a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+
+.shadcn-avatar-img {
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+}
+
+.shadcn-brand-info {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.shadcn-brand-title {
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+  color: var(--foreground);
+}
+
+/* Shadcn Select Dropdown */
+.shadcn-select-wrapper {
+  position: relative;
+}
+
+.shadcn-select-trigger {
+  height: 32px;
+  padding: 0 10px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--input);
+  background-color: var(--background);
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--foreground);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+  transition: all 0.15s ease;
+  outline: none;
+}
+
+.shadcn-select-trigger:hover {
+  background-color: var(--accent);
+  color: var(--accent-foreground);
+}
+
+.shadcn-select-trigger:focus-visible {
+  border-color: var(--ring);
+  box-shadow: 0 0 0 1.5px var(--ring);
+}
+
+.shadcn-select-content {
+  position: absolute;
+  top: calc(100% + 4px);
+  right: 0;
+  min-width: 120px;
+  background-color: var(--popover);
+  color: var(--popover-foreground);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 4px;
+  box-shadow: 0 4px 12px -2px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.06);
+  z-index: 50;
+  animation: selectFadeIn 0.15s ease;
+}
+
+.shadcn-select-item {
+  padding: 6px 8px;
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.shadcn-select-item:hover {
+  background-color: var(--accent);
+  color: var(--accent-foreground);
+}
+
+.shadcn-select-item.active {
+  background-color: var(--secondary);
+  font-weight: 600;
+}
+
+/* ================= 2. MAIN LAYOUT ================= */
+
+.shadcn-main {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  background-color: #fafafa;
+}
+
+/* Shadcn Button Base */
+.shadcn-btn {
+  font-family: inherit;
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  border-radius: var(--radius-lg);
+  cursor: pointer;
+  outline: none;
+  transition: all 0.15s ease;
+  user-select: none;
+  text-decoration: none;
+}
+
+.shadcn-btn:active {
+  transform: scale(0.99);
+}
+
+.shadcn-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.btn-content-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.btn-text-stack {
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+}
+
+.btn-icon-box {
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+/* Primary Button (Shadcn variant="default") */
+.shadcn-btn-default {
+  height: 58px;
+  padding: 0 14px;
+  background-color: var(--primary);
+  color: var(--primary-foreground);
+  border: 1px solid transparent;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.06);
+}
+
+.shadcn-btn-default:hover {
+  background-color: #27272a; /* zinc-800 */
+}
+
+.shadcn-btn-default .btn-icon-box {
+  width: 36px;
+  height: 36px;
+  background-color: rgba(255, 255, 255, 0.14);
+}
+
+.btn-primary-title {
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.btn-primary-sub {
+  font-size: 11px;
+  color: #a1a1aa; /* zinc-400 */
+  font-weight: 400;
+  margin-top: 1px;
+}
+
+/* Shadcn Alert Component */
+.shadcn-alert {
+  border: 1px solid rgba(253, 230, 138, 0.9);
+  background-color: #fffbeb;
+  border-radius: var(--radius-lg);
+  padding: 12px 14px;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.shadcn-alert-icon {
+  color: #b45309; /* amber-700 */
+  margin-top: 2px;
+  flex-shrink: 0;
+}
+
+.shadcn-alert-content {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.shadcn-alert-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: #78350f; /* amber-900 */
+  line-height: 16px;
+}
+
+.shadcn-alert-description {
+  font-size: 11px;
+  line-height: 16.5px;
+  color: #92400e; /* amber-800 */
+}
+
+/* Unlock Document Button (Shadcn variant="outline") */
+.shadcn-btn-outline {
+  height: 50px;
+  padding: 0 12px;
+  background-color: var(--card);
+  color: var(--foreground);
+  border: 1px solid var(--border);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+
+.shadcn-btn-outline:hover {
+  background-color: var(--accent);
+  border-color: #d4d4d8;
+}
+
+.shadcn-btn-outline .btn-icon-box {
+  width: 32px;
+  height: 32px;
+}
+
+.btn-outline-title {
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+}
+
+/* Footer Card (Shadcn Card) */
+.shadcn-card {
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border);
+  background-color: var(--card);
+  padding: 12px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.shadcn-card-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.coffee-icon-box {
+  width: 22px;
+  height: 22px;
+  border-radius: var(--radius-sm);
+  background-color: #fffbeb;
+  border: 1px solid #fde68a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #b45309;
+}
+
+.shadcn-card-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--foreground);
+}
+
+.shadcn-btn-secondary {
+  height: 32px;
+  padding: 0 10px;
+  background-color: #fffbeb;
+  border: 1px solid rgba(253, 230, 138, 0.8);
+  border-radius: var(--radius-md);
+  color: #78350f;
+  font-size: 11px;
+  font-weight: 500;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
+}
+
+.shadcn-btn-secondary:hover {
+  background-color: #fef3c7;
+  border-color: #fcd34d;
+}
+
+/* ================= 3. SHADCN TOAST (SONNER STYLE) ================= */
+
+.shadcn-toast {
+  position: absolute;
+  bottom: 14px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: var(--foreground);
+  color: var(--background);
+  padding: 8px 14px;
+  border-radius: 9999px;
+  font-size: 12px;
+  font-weight: 500;
+  box-shadow: 0 6px 16px -2px rgba(0, 0, 0, 0.25);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  z-index: 100;
+  pointer-events: none;
+  animation: toastPop 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  white-space: nowrap;
+}
+
+@keyframes toastPop {
+  from { opacity: 0; transform: translate(-50%, 8px) scale(0.96); }
+  to { opacity: 1; transform: translate(-50%, 0) scale(1); }
+}
+
+/* ================= 4. SHADCN DIALOG ================= */
+
+.shadcn-dialog-backdrop {
+  position: absolute;
+  inset: 0;
+  background-color: rgba(9, 9, 11, 0.55);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 200;
+  animation: backdropFade 0.15s ease;
+}
+
+.shadcn-dialog-content {
+  width: 310px;
+  background-color: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 18px;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.15), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  animation: dialogPop 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.shadcn-dialog-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.shadcn-dialog-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--foreground);
+}
+
+.shadcn-dialog-close {
+  background: none;
+  border: none;
+  color: var(--muted-foreground);
+  cursor: pointer;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2px;
+  transition: color 0.15s ease;
+}
+
+.shadcn-dialog-close:hover {
+  color: var(--foreground);
+}
+
+.shadcn-dialog-body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.shadcn-qr-box {
+  background-color: #fafafa;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 10px;
+  margin-bottom: 10px;
+}
+
+.shadcn-dialog-desc {
+  font-size: 11px;
+  color: var(--muted-foreground);
+  line-height: 15px;
+}
+
+/* Utilities */
+.hidden {
+  display: none !important;
+}
+
+.text-muted-foreground {
+  color: var(--muted-foreground);
+}
+
+.text-emerald-500 {
+  color: #10b981;
+}
+
+.text-amber-800 {
+  color: #92400e;
+}
+
+.text-blue-600 {
+  color: #2563eb;
+}
+
+.bg-blue-50 {
+  background-color: #eff6ff;
+}
+
+.border-blue-100 {
+  border-color: #dbeafe;
+}
+
+.ml-1 {
+  margin-left: 4px;
+}
+
+.opacity-70 {
+  opacity: 0.7;
+}
+
+@keyframes selectFadeIn {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes backdropFade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes dialogPop {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}

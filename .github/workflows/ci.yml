@@ -1,0 +1,47 @@
+name: CI - Lint & Validate
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  validate:
+    name: Validate Manifest & Code Integrity
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Run Integrity & Syntax Validation
+        run: node scripts/validate.js
+
+      - name: Build & Package Extension Artifact
+        run: |
+          mkdir -p dist
+          zip -r dist/howhow-extension.zip \
+            manifest.json \
+            background.js \
+            popup \
+            content \
+            assets \
+            icons \
+            -x "*.DS_Store*" "*Thumbs.db*"
+          echo "Package created at dist/howhow-extension.zip"
+          ls -lh dist/howhow-extension.zip
+
+      - name: Upload Build Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: howhow-extension-preview
+          path: dist/howhow-extension.zip
+          retention-days: 7

@@ -1,0 +1,70 @@
+{
+  "manifest_version": 3,
+  "name": "howhow - Tải PDF Studocu, Scribd & SlideShare",
+  "version": "1.0.0",
+  "description": "Mở khóa tài liệu và tải PDF siêu nét từ Studocu, Scribd và SlideShare.",
+  "icons": {
+    "16": "icons/icon16.png",
+    "32": "icons/icon32.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "action": {
+    "default_popup": "popup/popup.html",
+    "default_title": "howhow",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "32": "icons/icon32.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "permissions": [
+    "activeTab",
+    "scripting",
+    "cookies",
+    "storage",
+    "webNavigation"
+  ],
+  "host_permissions": [
+    "*://*.studocu.com/*",
+    "*://*.studocu.vn/*",
+    "*://*.studeersnel.nl/*",
+    "*://*.studocu.id/*",
+    "https://*.scribd.com/*",
+    "https://*.slideshare.net/*",
+    "https://*.slidesharecdn.com/*"
+  ],
+  "content_scripts": [
+    {
+      "matches": [
+        "*://*.studocu.com/*",
+        "*://*.studocu.vn/*",
+        "*://*.studeersnel.nl/*",
+        "*://*.studocu.id/*"
+      ],
+      "css": ["content/studocu.css"],
+      "js": ["content/studocu.js"],
+      "run_at": "document_idle"
+    },
+    {
+      "matches": [
+        "https://*.scribd.com/*"
+      ],
+      "css": ["content/scribd.css"],
+      "js": ["content/scribd.js"],
+      "run_at": "document_idle",
+      "all_frames": true
+    },
+    {
+      "matches": [
+        "https://*.slideshare.net/*"
+      ],
+      "js": ["content/slideshare.js"],
+      "run_at": "document_idle"
+    }
+  ]
+}

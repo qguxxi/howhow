@@ -1,0 +1,80 @@
+name: Release - Package & Publish
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version tag (e.g. v1.0.0)'
+        required: true
+        type: string
+
+jobs:
+  release:
+    name: Build & Publish Release
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Determine Version
+        id: get_version
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            TAG="${{ github.event.inputs.version }}"
+          else
+            TAG="${GITHUB_REF#refs/tags/}"
+          fi
+          VERSION="${TAG#v}"
+          echo "tag=${TAG}" >> $GITHUB_OUTPUT
+          echo "version=${VERSION}" >> $GITHUB_OUTPUT
+
+      - name: Run Integrity & Syntax Validation
+        run: node scripts/validate.js
+
+      - name: Verify Manifest Version Matches Tag
+        run: |
+          MANIFEST_VERSION=$(node -p "require('./manifest.json').version")
+          EXPECTED_VERSION="${{ steps.get_version.outputs.version }}"
+          echo "Manifest Version: $MANIFEST_VERSION"
+          echo "Release Version:  $EXPECTED_VERSION"
+          if [ "$MANIFEST_VERSION" != "$EXPECTED_VERSION" ]; then
+            echo "::error::manifest.json version ($MANIFEST_VERSION) does not match release tag ($EXPECTED_VERSION)"
+            exit 1
+          fi
+
+      - name: Package Production Extension Zip
+        run: |
+          mkdir -p dist
+          ZIP_NAME="howhow-${{ steps.get_version.outputs.tag }}.zip"
+          zip -r "dist/${ZIP_NAME}" \
+            manifest.json \
+            background.js \
+            popup \
+            content \
+            assets \
+            icons \
+            -x "*.DS_Store*" "*Thumbs.db*"
+          echo "zip_name=${ZIP_NAME}" >> $GITHUB_OUTPUT
+          echo "zip_path=dist/${ZIP_NAME}" >> $GITHUB_OUTPUT
+        id: package
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: "Release ${{ steps.get_version.outputs.tag }}"
+          tag_name: ${{ steps.get_version.outputs.tag }}
+          files: ${{ steps.package.outputs.zip_path }}
+          generate_release_notes: true
+          draft: false
+          prerelease: false
