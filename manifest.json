@@ -66,5 +66,18 @@
       "js": ["content/slideshare.js"],
       "run_at": "document_idle"
     }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": ["content/viewer_styles.css"],
+      "matches": [
+        "*://*.studocu.com/*",
+        "*://*.studocu.vn/*",
+        "*://*.studeersnel.nl/*",
+        "*://*.studocu.id/*",
+        "https://*.scribd.com/*",
+        "https://*.slideshare.net/*"
+      ]
+    }
   ]
 }

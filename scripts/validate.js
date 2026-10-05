@@ -104,7 +104,16 @@ if (Array.isArray(manifest.content_scripts)) {
   });
 }
 
-// 7. Check JavaScript syntax using node --check
+// 7. Check web accessible resources
+if (Array.isArray(manifest.web_accessible_resources)) {
+  manifest.web_accessible_resources.forEach((war, idx) => {
+    if (Array.isArray(war.resources)) {
+      war.resources.forEach(file => checkFileExists(file, `web_accessible_resources[${idx}]`));
+    }
+  });
+}
+
+// 8. Check JavaScript syntax using node --check
 console.log('\n🔍 Checking JavaScript syntax...');
 const jsFiles = [
   'background.js',

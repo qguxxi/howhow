@@ -1,158 +1,268 @@
-// howhow - SlideShare Content Script: Extract High-Res Slides & Export PDF
+// howhow - SlideShare Engine: Next.js Metadata Extraction, Clean Ads & High-Res PDF Export
 (() => {
   if (globalThis.__howhowSlideShareInjected) return;
   globalThis.__howhowSlideShareInjected = true;
 
-  function getSlideImages() {
-    const imgs = Array.from(document.querySelectorAll('img.slide-image, img[data-full], [id^="slide-"] img, picture.slide-image img, .slide_image, img[src*="slidesharecdn.com"]'));
-    const unique = new Map();
+  function getSlideShareImages() {
+    let images = [];
 
-    imgs.forEach((img, index) => {
-      // Tìm URL độ phân giải cao nhất
-      let url = img.dataset.full || img.dataset.fullImage || img.getAttribute('data-full');
+    // Cách 1: Quét đệ quy đối tượng __NEXT_DATA__
+    try {
+      const nextDataEl = document.getElementById('__NEXT_DATA__');
+      if (nextDataEl) {
+        const data = JSON.parse(nextDataEl.textContent);
 
-      if (!url && img.getAttribute('srcset')) {
-        const parts = img.getAttribute('srcset').split(',').map(s => s.trim());
-        const candidates = parts.map(p => {
-          const [u, w] = p.split(/\s+/);
-          return { url: u, width: parseInt(w) || 0 };
-        }).sort((a, b) => b.width - a.width);
+        // 1. Tìm tổng số slide đệ quy
+        let totalSlidesCount = 0;
+        function findTotalSlides(obj) {
+          if (!obj || typeof obj !== 'object') return;
+          if (typeof obj.totalSlides === 'number' && obj.totalSlides > 0) {
+            totalSlidesCount = obj.totalSlides;
+            return;
+          }
+          if (typeof obj.total === 'number' && obj.total > 0 && obj.host && obj.imageLocation) {
+            totalSlidesCount = obj.total;
+            return;
+          }
+          for (const k in obj) {
+            if (Object.prototype.hasOwnProperty.call(obj, k)) {
+              findTotalSlides(obj[k]);
+              if (totalSlidesCount > 0) return;
+            }
+          }
+        }
+        findTotalSlides(data);
 
-        if (candidates.length && candidates[0].url) {
-          url = candidates[0].url;
+        // 2. Tìm metadata chứa host và imageLocation
+        let metadata = null;
+        function findSlidesMetadata(obj) {
+          if (!obj || typeof obj !== 'object') return;
+          if (obj.host && typeof obj.host === 'string' && obj.host.includes('slideshare') && obj.imageLocation) {
+            metadata = obj;
+            return;
+          }
+          for (const k in obj) {
+            if (Object.prototype.hasOwnProperty.call(obj, k)) {
+              findSlidesMetadata(obj[k]);
+              if (metadata) return;
+            }
+          }
+        }
+        findSlidesMetadata(data);
+
+        if (metadata) {
+          const baseUrl = metadata.host;
+          const loc = metadata.imageLocation;
+          const title = metadata.title || '';
+          const total = totalSlidesCount || metadata.totalSlides || metadata.total || 100;
+
+          const sizes = metadata.imageSizes || [];
+          if (sizes.length > 0) {
+            sizes.sort((a, b) => b.width - a.width);
+            const bestSize = sizes[0];
+            const quality = bestSize.quality;
+            const width = bestSize.width;
+
+            for (let i = 1; i <= total; i++) {
+              const imgUrl = `${baseUrl}/${loc}/${quality}/${title}-${i}-${width}.jpg`;
+              images.push(imgUrl);
+            }
+          }
+        }
+
+        // 3. Fallback: Gom bất kỳ link ảnh CDN trực tiếp nào trong JSON
+        if (images.length === 0) {
+          const directUrls = new Set();
+          function collectDirectUrls(obj) {
+            if (!obj) return;
+            if (typeof obj === 'string') {
+              if (obj.includes('slidesharecdn.com') && (obj.endsWith('.jpg') || obj.endsWith('.png') || obj.includes('.jpg?') || obj.includes('.png?'))) {
+                directUrls.add(obj);
+              }
+            } else if (typeof obj === 'object') {
+              for (const k in obj) {
+                if (Object.prototype.hasOwnProperty.call(obj, k)) {
+                  collectDirectUrls(obj[k]);
+                }
+              }
+            }
+          }
+          collectDirectUrls(data);
+          if (directUrls.size > 0) {
+            images = Array.from(directUrls);
+            images.sort((a, b) => {
+              const matchA = a.match(/-(\d+)-\d+\.jpg/);
+              const matchB = b.match(/-(\d+)-\d+\.jpg/);
+              if (matchA && matchB) {
+                return parseInt(matchA[1], 10) - parseInt(matchB[1], 10);
+              }
+              return 0;
+            });
+          }
         }
       }
+    } catch (e) {
+      console.warn('Lỗi cào Next.js JSON SlideShare:', e);
+    }
 
-      if (!url) {
-        url = img.dataset.src || img.getAttribute('data-src') || img.src;
-      }
-
-      if (url && !url.includes('placeholder') && !url.startsWith('data:image/svg')) {
-        const key = img.id || `slide_${index}`;
-        if (!unique.has(url)) {
-          unique.set(url, { id: key, url, index });
+    // Cách 2: Cào qua thẻ <picture> & <source srcset>
+    if (images.length === 0) {
+      const pictures = document.querySelectorAll('picture');
+      pictures.forEach(pic => {
+        const source = pic.querySelector('source');
+        let url = null;
+        if (source) {
+          const srcset = source.getAttribute('srcset');
+          if (srcset) {
+            const parts = srcset.split(',').map(s => s.trim()).filter(Boolean);
+            let maxWidth = -1;
+            for (const part of parts) {
+              const match = part.match(/^(\S+)\s+(\d+)w$/);
+              if (match) {
+                const w = parseInt(match[2], 10);
+                if (w > maxWidth && match[1].includes('slidesharecdn.com')) {
+                  maxWidth = w;
+                  url = match[1];
+                }
+              } else if (part.includes('slidesharecdn.com')) {
+                url = part;
+              }
+            }
+          }
         }
-      }
+        if (!url) {
+          const img = pic.querySelector('img');
+          if (img) {
+            const src = img.getAttribute('src') || img.getAttribute('data-src') || img.getAttribute('data-full');
+            if (src && src.includes('slidesharecdn.com')) url = src;
+          }
+        }
+        if (url) images.push(url);
+      });
+    }
+
+    // Cách 3: Fallback quét toàn bộ thẻ <img>
+    if (images.length === 0) {
+      const imgs = document.querySelectorAll('img');
+      imgs.forEach(img => {
+        const src = img.getAttribute('src') ||
+                    img.getAttribute('data-src') ||
+                    img.getAttribute('data-full') ||
+                    img.getAttribute('srcset') ||
+                    img.getAttribute('data-lazy-src');
+
+        if (src && src.includes('slidesharecdn.com')) {
+          if (src.includes(' ')) {
+            const parts = src.split(',').map(s => s.trim()).filter(Boolean);
+            let maxWidth = -1;
+            let bestUrl = null;
+            for (const part of parts) {
+              const match = part.match(/^(\S+)\s+(\d+)w$/);
+              if (match) {
+                const w = parseInt(match[2], 10);
+                if (w > maxWidth) {
+                  maxWidth = w;
+                  bestUrl = match[1];
+                }
+              } else {
+                bestUrl = part;
+              }
+            }
+            if (bestUrl) images.push(bestUrl);
+          } else {
+            images.push(src);
+          }
+        }
+      });
+    }
+
+    return Array.from(new Set(images));
+  }
+
+  function cleanSlideShare() {
+    const selectorsToRemove = [
+      '.sidebar',
+      '#related-slideshows',
+      '.ad-banner',
+      '.global-ad-slot',
+      '.ad-container',
+      '.advertisement',
+      '[class*="premium-promo"]',
+      '[class*="paywall"]',
+      'iframe[src*="ad"]',
+      'div[class*="ad-"]',
+      'div[id*="ad-"]'
+    ];
+    selectorsToRemove.forEach(sel => {
+      document.querySelectorAll(sel).forEach(el => el.remove());
     });
 
-    return Array.from(unique.values()).sort((a, b) => a.index - b.index);
-  }
-
-  function performUnblur() {
-    // Ẩn banners, popups, sticky toolbars
-    document.querySelectorAll('.j-ad, .ad-container, [class*="AdContainer"], #top-banner, .banner-wrapper, .modal-backdrop, .dialog-wrapper').forEach(el => {
-      el.style.display = 'none';
+    document.querySelectorAll('.blur, .blurred').forEach(el => {
+      el.classList.remove('blur', 'blurred');
     });
+
+    return { ok: true, message: 'Đã dọn sạch quảng cáo và tối ưu giao diện xem online!' };
   }
 
-  let printContainer = null;
-  let printStyle = null;
-
-  function restore() {
-    printContainer?.remove();
-    printStyle?.remove();
-    printContainer = null;
-    printStyle = null;
-    document.body.classList.remove('howhow-slideshare-print');
-  }
-
-  async function startExportPdf() {
-    const slides = getSlideImages();
-    if (!slides.length) {
+  function renderSlideSharePdf() {
+    const images = getSlideShareImages();
+    if (!images.length) {
       return { ok: false, error: 'Không tìm thấy hình ảnh slide nào trên trang SlideShare.' };
     }
 
-    restore();
+    const existingViewer = document.getElementById('clean-viewer-container');
+    if (existingViewer) existingViewer.remove();
 
-    printContainer = document.createElement('div');
-    printContainer.id = 'howhow-slideshare-container';
+    const viewerContainer = document.createElement('div');
+    viewerContainer.id = 'clean-viewer-container';
 
-    // Tạo các phần tử hình ảnh slide cho trang in
-    slides.forEach(({ url }, idx) => {
+    images.forEach((imgUrl, index) => {
       const pageDiv = document.createElement('div');
-      pageDiv.className = 'howhow-slide-page';
+      pageDiv.className = 'std-page std-page-landscape';
+      pageDiv.id = `slideshare-page-${index + 1}`;
+      pageDiv.style.cssText = 'width: 100%; max-width: 1200px; margin-bottom: 20px; display: flex; justify-content: center; align-items: center; background: white;';
 
       const img = document.createElement('img');
-      img.src = url;
+      img.src = imgUrl;
       img.loading = 'eager';
-      img.className = 'howhow-slide-img';
+      img.style.cssText = 'width: 100%; height: auto; max-height: 100vh; object-fit: contain; display: block;';
 
       pageDiv.appendChild(img);
-      printContainer.appendChild(pageDiv);
+      viewerContainer.appendChild(pageDiv);
     });
 
-    document.body.appendChild(printContainer);
-    document.body.classList.add('howhow-slideshare-print');
+    document.body.appendChild(viewerContainer);
 
-    printStyle = document.createElement('style');
-    printStyle.textContent = `
-      @media screen {
-        #howhow-slideshare-container { display: none !important; }
-      }
-      @media print {
-        @page { size: landscape; margin: 0; }
-        html, body { margin: 0 !important; padding: 0 !important; background: #fff !important; }
-        body.howhow-slideshare-print > *:not(#howhow-slideshare-container) { display: none !important; }
-        #howhow-slideshare-container { display: block !important; }
-        .howhow-slide-page {
-          width: 100vw !important;
-          height: 100vh !important;
-          page-break-after: always !important;
-          break-after: page !important;
-          display: flex !important;
-          align-items: center !important;
-          justify-content: center !important;
-          overflow: hidden !important;
-          box-sizing: border-box !important;
-          background: #fff !important;
-        }
-        .howhow-slide-page:last-child {
-          page-break-after: auto !important;
-          break-after: auto !important;
-        }
-        .howhow-slide-img {
-          width: 100% !important;
-          height: 100% !important;
-          object-fit: contain !important;
-        }
-      }
-    `;
-    document.head.appendChild(printStyle);
+    let link = document.getElementById('howhow-viewer-styles');
+    if (!link) {
+      link = document.createElement('link');
+      link.id = 'howhow-viewer-styles';
+      link.rel = 'stylesheet';
+      link.href = chrome.runtime.getURL('content/viewer_styles.css');
+      document.head.appendChild(link);
+    }
 
-    window.addEventListener('afterprint', () => restore(), { once: true });
-    requestAnimationFrame(() => window.print());
+    setTimeout(() => {
+      window.print();
+    }, 1000);
 
-    return { ok: true, pageCount: slides.length };
+    return { ok: true, count: images.length };
   }
 
-  // Message listener
-  chrome.runtime.onMessage.addListener((message, _sender, respond) => {
+  // Lắng nghe lệnh từ popup
+  chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     if (message?.target !== 'howhow-slideshare') return;
 
-    if (message.action === 'PING') {
-      const slides = getSlideImages();
-      respond({ ok: true, platform: 'slideshare', pageCount: slides.length });
-      return;
-    }
-
     if (message.action === 'UNBLUR') {
-      performUnblur();
-      const slides = getSlideImages();
-      respond({ ok: true, message: `Đã dọn dẹp giao diện SlideShare (${slides.length} slide)!`, pageCount: slides.length });
-      return;
-    }
-
-    if (message.action === 'START_PDF') {
-      startExportPdf().then(respond);
+      const res = cleanSlideShare();
+      sendResponse(res);
       return true;
     }
 
-    if (message.action === 'RESTORE') {
-      restore();
-      respond({ ok: true });
-      return;
+    if (message.action === 'START_PDF') {
+      const res = renderSlideSharePdf();
+      sendResponse(res);
+      return true;
     }
   });
-
-  performUnblur();
 })();
